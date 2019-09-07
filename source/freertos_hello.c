@@ -51,11 +51,13 @@
  ******************************************************************************/
 
 /* Task priorities. */
-#define hello_task_PRIORITY (configMAX_PRIORITIES - 1)
+#define Led_Rojo_task_PRIORITY (configMAX_PRIORITIES - 1)
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
-static void hello_task(void *pvParameters);
+static void Led_Rojo_task(void *pvParameters);
+
+static void Led_Verde_task(void *pvParameters);
 
 /*******************************************************************************
  * Code
@@ -71,12 +73,18 @@ int main(void)
     BOARD_InitDebugConsole();
 
     board_init();
-    if (xTaskCreate(hello_task, "Hello_task", configMINIMAL_STACK_SIZE + 10, NULL, hello_task_PRIORITY, NULL) != pdPASS)
+    if (xTaskCreate(Led_Rojo_task, "Led_Rojo_task", configMINIMAL_STACK_SIZE + 10, NULL, Led_Rojo_task_PRIORITY, NULL) != pdPASS)
     {
         PRINTF("Task creation failed!.\r\n");
         while (1)
             ;
     }
+    if (xTaskCreate(Led_Verde_task, "Led_Verde_task", configMINIMAL_STACK_SIZE + 10, NULL, Led_Rojo_task_PRIORITY, NULL) != pdPASS)
+        {
+            PRINTF("Task creation failed!.\r\n");
+            while (1)
+                ;
+        }
     vTaskStartScheduler();
     for (;;)
         ;
@@ -85,12 +93,20 @@ int main(void)
 /*!
  * @brief Task responsible for printing of "Hello world." message.
  */
-static void hello_task(void *pvParameters)
+static void Led_Rojo_task(void *pvParameters)
 {
     for (;;)
     {
        PRINTF("Hello world.\r\n");
        board_setLed(BOARD_LED_ID_ROJO, BOARD_LED_MSG_TOGGLE);
+       vTaskDelay(500 / portTICK_PERIOD_MS);
+    }
+}
+static void Led_Verde_task(void *pvParameters)
+{
+    for (;;)
+    {
+       board_setLed(BOARD_LED_ID_VERDE, BOARD_LED_MSG_TOGGLE);
        vTaskDelay(500 / portTICK_PERIOD_MS);
     }
 }
