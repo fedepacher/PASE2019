@@ -44,6 +44,8 @@
 #include "board.h"
 
 #include "pin_mux.h"
+
+#include "board_dsi.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -67,6 +69,8 @@ int main(void)
     BOARD_InitPins();
     BOARD_BootClockRUN();
     BOARD_InitDebugConsole();
+
+    board_init();
     if (xTaskCreate(hello_task, "Hello_task", configMINIMAL_STACK_SIZE + 10, NULL, hello_task_PRIORITY, NULL) != pdPASS)
     {
         PRINTF("Task creation failed!.\r\n");
@@ -85,8 +89,8 @@ static void hello_task(void *pvParameters)
 {
     for (;;)
     {
-        PRINTF("Hello world.\r\n");
-        //vTaskSuspend(NULL);
-        vTaskDelay(500 / portTICK_PERIOD_MS);
+       PRINTF("Hello world.\r\n");
+       board_setLed(BOARD_LED_ID_ROJO, BOARD_LED_MSG_TOGGLE);
+       vTaskDelay(500 / portTICK_PERIOD_MS);
     }
 }
